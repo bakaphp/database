@@ -17,6 +17,12 @@ class Model extends \Phalcon\Mvc\Model
     public $updated_at;
 
     /**
+     *
+     * @var integer
+     */
+    public $is_deleted = 0;
+
+    /**
      * Get the primary id of this model
      *
      * @return int
