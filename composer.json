@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Baka\\Databse\\": "src/"
+            "Baka\\Database\\": "src/"
         }
     },
      "autoload-dev": {
         "psr-4": {
-            "Baka\\Databse\\": "src/"
+            "Baka\\Database\\": "src/"
         }
     }   
 }
