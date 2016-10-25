@@ -103,7 +103,7 @@ class Model extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return Content
      */
-    public static function findFirst($parameters = null): \Phalcon\Mvc\Model
+    public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
     }
