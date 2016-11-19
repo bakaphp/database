@@ -117,7 +117,7 @@ class Model extends \Phalcon\Mvc\Model
     public function toFullArray()
     {
         //convert the obj to array in order to conver to json
-        $result = get_object_vars(this);
+        $result = get_object_vars($this);
 
         foreach ($result as $key => $value) {
             if (preg_match('#^_#', $key) === 1) {
