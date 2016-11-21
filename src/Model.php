@@ -79,7 +79,7 @@ class Model extends \Phalcon\Mvc\Model
      *
      * @return void
      */
-    public function softDelete(): boolean
+    public function softDelete()
     {
         $this->is_deleted = 1;
 
