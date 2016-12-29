@@ -70,18 +70,20 @@ class ModelCustomFields extends Model
         $results = parent::find($parameters);
         $newResult = [];
 
-        foreach ($results as $result) {
+        if ($results) {
+            foreach ($results as $result) {
 
-            //field the object
-            foreach ($result->getAllCustomFields() as $key => $value) {
-                $result->{$key} = $value;
+                //field the object
+                foreach ($result->getAllCustomFields() as $key => $value) {
+                    $result->{$key} = $value;
+                }
+
+                $newResult[] = $result;
+
             }
 
-            $newResult[] = $result;
-
+            unset($results);
         }
-
-        unset($results);
         return $newResult;
     }
 
@@ -95,10 +97,12 @@ class ModelCustomFields extends Model
     {
         $result = parent::findFirst($parameters);
 
-        //field the object
-        foreach ($result->getAllCustomFields() as $key => $value) {
-            $result->{$key} = $value;
+        if ($result) {
+            //field the object
+            foreach ($result->getAllCustomFields() as $key => $value) {
+                $result->{$key} = $value;
 
+            }
         }
 
         return $result;
