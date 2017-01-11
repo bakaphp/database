@@ -61,6 +61,7 @@ class Model extends \Phalcon\Mvc\Model
     {
         $this->created_at = date('Y-m-d H:i:s');
         $this->updated_at = '0000-00:00 00:00:00';
+        $this->is_deleted = '0';
 
     }
 
