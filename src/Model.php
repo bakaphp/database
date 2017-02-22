@@ -6,6 +6,8 @@ use Phalcon\Mvc\Model\ResultsetInterface;
 
 class Model extends \Phalcon\Mvc\Model
 {
+    public $id;
+
     /**
      * @var string
      */

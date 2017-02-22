@@ -33,6 +33,7 @@ class ModelCustomFields extends Model
 
         $bind = [$this->id, $models->id];
 
+        $customFieldsValueTable = $this->getSource() . '_custom_fields';
         $result = $this->getReadConnection()->prepare("SELECT l.id,
                                                c.id as field_id,
                                                c.name,
@@ -41,7 +42,7 @@ class ModelCustomFields extends Model
                                                c.user_id,
                                                l.created_at,
                                                l.updated_at
-                                        FROM leads_custom_fields l,
+                                        FROM {$customFieldsValueTable} l,
                                              custom_fields c
                                         WHERE c.id = l.custom_fields_id
                                           AND l.leads_id = ?
