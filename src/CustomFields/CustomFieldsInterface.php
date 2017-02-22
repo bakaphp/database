@@ -1,12 +1,12 @@
 <?php
 
-namespace Baka\Database;
+namespace Baka\Database\CustomFields;
 
 /**
  * Trait to implemente everything needed from a simple CRUD in a API
  *
  */
-interface CustomeFieldsInterface
+interface CustomFieldsInterface
 {
     /**
      * Set the custom primary field id
