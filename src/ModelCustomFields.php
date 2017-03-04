@@ -20,7 +20,9 @@ class ModelCustomFields extends Model
      */
     public function getAllCustomFields(array $fields = [])
     {
-        $models = Modules::findFirstByName($this->getSource());
+        if (!$models = Modules::findFirstByName($this->getSource())) {
+            return;
+        }
 
         $conditions = [];
         $fieldsIn = null;
@@ -31,15 +33,15 @@ class ModelCustomFields extends Model
 
         $conditions = 'modules_id = ? ' . $fieldsIn;
 
-        $bind = [$this->id, $models->id];
+        $bind = [$this->getId(), $models->getId()];
 
         $customFieldsValueTable = $this->getSource() . '_custom_fields';
-        $result = $this->getReadConnection()->prepare("SELECT l.id,
+
+        $result = $this->getReadConnection()->prepare("SELECT l.{$this->getSource()}_id,
                                                c.id as field_id,
                                                c.name,
-                                               c.type,
                                                l.value ,
-                                               c.user_id,
+                                               c.users_id,
                                                l.created_at,
                                                l.updated_at
                                         FROM {$customFieldsValueTable} l,
@@ -73,14 +75,15 @@ class ModelCustomFields extends Model
 
         if ($results) {
             foreach ($results as $result) {
+                $customFields = $result->getAllCustomFields();
+                if (is_array($customFields)) {
+                    //field the object
+                    foreach ($customFields as $key => $value) {
+                        $result->{$key} = $value;
+                    }
 
-                //field the object
-                foreach ($result->getAllCustomFields() as $key => $value) {
-                    $result->{$key} = $value;
+                    $newResult[] = $result;
                 }
-
-                $newResult[] = $result;
-
             }
 
             unset($results);
@@ -99,10 +102,13 @@ class ModelCustomFields extends Model
         $result = parent::findFirst($parameters);
 
         if ($result) {
-            //field the object
-            foreach ($result->getAllCustomFields() as $key => $value) {
-                $result->{$key} = $value;
+            $customFields = $result->getAllCustomFields();
 
+            if (is_array($customFields)) {
+                //field the object
+                foreach ($result->getAllCustomFields() as $key => $value) {
+                    $result->{$key} = $value;
+                }
             }
         }
 
@@ -119,7 +125,9 @@ class ModelCustomFields extends Model
     protected function saveCustomFields(): bool
     {
         //find the custom field module
-        $module = CustomFields\Modules::findFirstByName($this->getSource());
+        if (!$module = CustomFields\Modules::findFirstByName($this->getSource())) {
+            return false;
+        }
 
         //we need a new instane to avoid overwrite
         $reflector = new \ReflectionClass($this);
@@ -146,6 +154,7 @@ class ModelCustomFields extends Model
             }
         }
 
+        //clean
         unset($this->customFields);
 
         return true;
@@ -163,7 +172,10 @@ class ModelCustomFields extends Model
         $classNameWithNameSpace = $reflector->getNamespaceName() . '\\' . $reflector->getShortName() . 'CustomFields';
         $customModel = new $classNameWithNameSpace();
 
-        return $customModel->find(['conditions' => $this->getSource() . '_id = ?0', 'bind' => [$id]])->delete();
+        //return $customModel->find(['conditions' => $this->getSource() . '_id = ?0', 'bind' => [$id]])->delete();
+        //we need to run the query since we dont have primary key
+        $result= $this->getReadConnection()->prepare("DELETE FROM {$customModel->getSource()} WHERE ".$this->getSource() . "_id = ?");
+        return $result->execute([$id]);
     }
 
     /**
@@ -187,10 +199,6 @@ class ModelCustomFields extends Model
      */
     public function beforeUpdate()
     {
-        if (empty($this->customFields)) {
-            throw new Exception(_("This is a custom field module, which means it needs its custom field values in order to work, please call setCustomFields"));
-        }
-
         parent::beforeUpdate();
     }
 
@@ -215,15 +223,26 @@ class ModelCustomFields extends Model
     }
 
     /**
+     * After save
+     * @return void
+     */
+    public function afterSave()
+    {
+        //
+    }
+
+    /**
      * After the model was update we need to update its custom fields
      *
      * @return void
      */
     public function afterUpdate()
     {
-        $this->cleanCustomFields($this->getId());
-        $this->saveCustomFields();
-
+        //only clean and change custom fields if they are been sent
+        if (!empty($this->customFields)) {
+            $this->cleanCustomFields($this->getId());
+            $this->saveCustomFields();
+        }
     }
 
     /**
@@ -235,5 +254,4 @@ class ModelCustomFields extends Model
     {
         $this->cleanCustomFields($this->getId());
     }
-
 }
