@@ -62,7 +62,8 @@ class Model extends \Phalcon\Mvc\Model
     public function beforeCreate()
     {
         $this->created_at = date('Y-m-d H:i:s');
-        $this->updated_at = '0000-00:00 00:00:00';
+        $this->updated_at = null;
+        $this->is_deleted = 0;
 
     }
 
