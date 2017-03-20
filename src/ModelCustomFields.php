@@ -240,7 +240,20 @@ class ModelCustomFields extends Model
     {
         //only clean and change custom fields if they are been sent
         if (!empty($this->customFields)) {
+
+            //replace old custom with new
+            $allCustomFields  = $this->getAllCustomFields();
+            if (is_array($allCustomFields)) {
+                foreach ($this->customFields as $key => $value) {
+                    $allCustomFields[$key] = $value;
+                }
+            }
+
+            //set
+            $this->setCustomFields($allCustomFields);
+            //clean old
             $this->cleanCustomFields($this->getId());
+            //save new
             $this->saveCustomFields();
         }
     }
