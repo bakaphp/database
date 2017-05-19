@@ -6,6 +6,9 @@ use Phalcon\Mvc\Model\ResultsetInterface;
 
 class Model extends \Phalcon\Mvc\Model
 {
+    /**
+     * @return int
+     */
     public $id;
 
     /**
@@ -19,8 +22,7 @@ class Model extends \Phalcon\Mvc\Model
     public $updated_at;
 
     /**
-     *
-     * @var integer
+     * @var int
      */
     public $is_deleted = 0;
 
@@ -64,7 +66,6 @@ class Model extends \Phalcon\Mvc\Model
         $this->created_at = date('Y-m-d H:i:s');
         $this->updated_at = null;
         $this->is_deleted = 0;
-
     }
 
     /**

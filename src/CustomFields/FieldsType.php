@@ -4,7 +4,7 @@ namespace Baka\Database\CustomFields;
 
 use Baka\Database\Model;
 
-class Modules extends Model
+class FieldTypes extends Model
 {
     /**
      * @var string
@@ -18,6 +18,6 @@ class Modules extends Model
      */
     public function getSource(): string
     {
-        return 'modules';
+        return 'fields_type';
     }
 }

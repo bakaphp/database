@@ -6,58 +6,48 @@ use Baka\Database\Model;
 
 class CustomFields extends Model
 {
-
     /**
-     *
-     * @var integer
+     * @var int
      */
-    public $id;
+    public $companies_id;
 
     /**
-     *
-     * @var integer
-     */
-    public $business_id;
-
-    /**
-     *
-     * @var integer
+     * @var int
      */
     public $user_id;
 
     /**
-     *
      * @var string
      */
     public $name;
 
     /**
-     *
-     * @var string
-     */
-    public $type;
-
-    /**
-     *
-     * @var integer
+     * @var int
      */
     public $modules_id;
 
     /**
-     *
-     * @var string
+     * @var int
      */
-    public $created_at;
+    public $fields_type_id;
 
     /**
+     * Returns the name of the table associated to the model.
      *
-     * @var string
+     * @return string
      */
-    public $updated_at;
-
-    public function getSource()
+    public function getSource(): string
     {
         return 'custom_fields';
     }
 
+    /**
+     * Initialize some stuff.
+     *
+     * @return void
+     */
+    public function initialize(): void
+    {
+        $this->hasOne('fields_type_id', '\Baka\Database\CustomFields\FieldTypes', 'id', ['alias' => 'type']);
+    }
 }

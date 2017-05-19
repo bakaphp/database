@@ -14,5 +14,4 @@ interface CustomFieldsInterface
      * @param int $id
      */
     public function setCustomId(int $id);
-
 }

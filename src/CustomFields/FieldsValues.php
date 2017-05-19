@@ -6,40 +6,33 @@ use Baka\Database\Model;
 
 class FieldsValues extends Model
 {
-
     /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
+     * @var int
      */
     public $custom_fields_id;
 
     /**
-     *
      * @var string
      */
     public $value;
 
     /**
-     *
      * @var string
      */
     public $created_at;
 
     /**
-     *
      * @var string
      */
     public $updated_at;
 
-    public function getSource()
+    /**
+     * Returns the name of the table associated to the model.
+     *
+     * @return string
+     */
+    public function getSource(): string
     {
         return 'fields_values';
     }
-
 }
