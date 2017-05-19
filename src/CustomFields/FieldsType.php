@@ -4,7 +4,7 @@ namespace Baka\Database\CustomFields;
 
 use Baka\Database\Model;
 
-class FieldTypes extends Model
+class FieldsType extends Model
 {
     /**
      * @var string
