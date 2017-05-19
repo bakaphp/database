@@ -48,6 +48,6 @@ class CustomFields extends Model
      */
     public function initialize(): void
     {
-        $this->hasOne('fields_type_id', '\Baka\Database\CustomFields\FieldTypes', 'id', ['alias' => 'type']);
+        $this->hasOne('fields_type_id', '\Baka\Database\CustomFields\FieldsType', 'id', ['alias' => 'type']);
     }
 }
