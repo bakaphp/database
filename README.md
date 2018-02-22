@@ -19,7 +19,7 @@ To use you need your  model to extend from ModelCustomFields
 ```php
 <?php
 
-namespace Mesocom\Models;
+namespace MCTekK\Models;
 
 class Leads extends \Baka\Database\ModelCustomFields
 {
@@ -31,7 +31,7 @@ And you also need to create the custom fields model value
 ```php
 <?php
 
-namespace Mesocom\Models;
+namespace MCTekK\Models;
 
 use \Baka\Database\CustomeFieldsInterface;
 
