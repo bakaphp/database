@@ -96,7 +96,7 @@ class Model extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return Content[]
      */
-    public static function find($parameters = null): ResultsetInterface
+    public static function find($parameters = null)
     {
         return parent::find($parameters);
     }
