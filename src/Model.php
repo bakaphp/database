@@ -116,9 +116,9 @@ class Model extends \Phalcon\Mvc\Model
      * Since Phalcon 3, they pass model objet throught the toArray function when we call json_encode, that can fuck u up, if you modify the obj
      * so we need a way to convert it to array without loosing all the extra info we add
      *
-     * @return [type] [description]
+     * @return array
      */
-    public function toFullArray()
+    public function toFullArray(): array
     {
         //convert the obj to array in order to conver to json
         $result = get_object_vars($this);
