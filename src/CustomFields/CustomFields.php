@@ -7,6 +7,11 @@ use Baka\Database\Model;
 class CustomFields extends Model
 {
     /**
+     * @var integer
+     */
+    public $id;
+
+    /**
      * @var int
      */
     public $companies_id;
@@ -49,5 +54,26 @@ class CustomFields extends Model
     public function initialize(): void
     {
         $this->hasOne('fields_type_id', '\Baka\Database\CustomFields\FieldsType', 'id', ['alias' => 'type']);
+    }
+
+    /**
+     * Get the felds of this custom field module
+     *
+     * @param string $module
+     * @return void
+     */
+    public static function getFields(string $module)
+    {
+        $modules = Modules::findFirstByName($module);
+
+        if ($modules) {
+            return self::find([
+                'modules_id = ?0',
+                'bind' => [$modules->id],
+                'columns' => 'name, label, type'
+            ]);
+        }
+
+        return null;
     }
 }

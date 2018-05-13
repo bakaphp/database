@@ -3,6 +3,7 @@
 namespace Baka\Database;
 
 use Baka\Database\CustomFields\Modules;
+use Baka\Database\CustomFields\CustomFields;
 use Exception;
 
 /**
@@ -11,6 +12,63 @@ use Exception;
 class ModelCustomFields extends Model
 {
     protected $customFields = [];
+
+    /**
+     * Get a models custom fields
+     *
+     * @param mixed $findResults
+     *
+     * @return Array
+     *
+     * @TODO: Made a change to return a single record when $getById is true. Keeping an eye on it.
+     */
+    public static function getCustomFields($findResults, $getById = false)
+    {
+        if (count($findResults) == 1 && $getById) {
+            $findResults = [$findResults];
+        }
+
+        $results = [];
+
+        $classReflection = (new \ReflectionClass($findResults[0]));
+        $className = $classReflection->getShortName();
+        $classNamespace = $classReflection->getNamespaceName();
+
+        $module = Modules::findFirstByName($className);
+
+        if ($module) {
+            $model = $classNamespace . '\\' . ucfirst($module->name) . 'CustomFields';
+            $modelId = strtolower($module->name) . '_id';
+
+            $customFields = CustomFields::findByModulesId($module->id);
+
+            if (is_array($findResults)) {
+                $findResults[0] = $findResults[0]->toArray();
+            } else {
+                $findResults = $findResults->toArray();
+            }
+            foreach ($findResults as $result) {
+                foreach ($customFields as $customField) {
+                    $result['custom_fields'][$customField->name] = '';
+                    $values = [];
+                    $moduleValues = $model::find([
+                        $modelId . ' = ?0 AND custom_fields_id = ?1',
+                        'bind' => [$result['id'], $customField->id]
+                    ]);
+
+                    if ($moduleValues->count()) {
+                        $result['custom_fields'][$customField->name] = $moduleValues[0]->value;
+                    }
+                }
+
+                $results[] = $result;
+            }
+
+            return $getById ? $results[0] : $results;
+        }
+
+        return $getById ? $findResults[0]->toArray() : $findResults;
+    }
 
     /**
      * Get all custom fields of the given object
@@ -28,7 +86,7 @@ class ModelCustomFields extends Model
         $fieldsIn = null;
 
         if (!empty($fields)) {
-            $fieldsIn = " and name in ('" . implode("','", $fields) . ")";
+            $fieldsIn = " and name in ('" . implode("','", $fields) . ')';
         }
 
         $conditions = 'modules_id = ? ' . $fieldsIn;
@@ -135,7 +193,6 @@ class ModelCustomFields extends Model
 
         //if all is good now lets get the custom fields and save them
         foreach ($this->customFields as $key => $value) {
-
             //create a new obj per itration to se can save new info
             $customModel = new $classNameWithNameSpace();
 
@@ -174,7 +231,7 @@ class ModelCustomFields extends Model
 
         //return $customModel->find(['conditions' => $this->getSource() . '_id = ?0', 'bind' => [$id]])->delete();
         //we need to run the query since we dont have primary key
-        $result= $this->getReadConnection()->prepare("DELETE FROM {$customModel->getSource()} WHERE ".$this->getSource() . "_id = ?");
+        $result = $this->getReadConnection()->prepare("DELETE FROM {$customModel->getSource()} WHERE " . $this->getSource() . '_id = ?');
         return $result->execute([$id]);
     }
 
@@ -186,7 +243,7 @@ class ModelCustomFields extends Model
     public function beforeCreate()
     {
         if (empty($this->customFields)) {
-            throw new Exception(_("This is a custom field module, which means it needs its custom field values in order to work, please call setCustomFields"));
+            throw new Exception('This is a custom field module, which means it needs its custom field values in order to work, please call setCustomFields');
         }
 
         parent::beforeCreate();
@@ -240,9 +297,8 @@ class ModelCustomFields extends Model
     {
         //only clean and change custom fields if they are been sent
         if (!empty($this->customFields)) {
-
             //replace old custom with new
-            $allCustomFields  = $this->getAllCustomFields();
+            $allCustomFields = $this->getAllCustomFields();
             if (is_array($allCustomFields)) {
                 foreach ($this->customFields as $key => $value) {
                     $allCustomFields[$key] = $value;

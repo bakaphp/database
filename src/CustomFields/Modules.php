@@ -7,6 +7,11 @@ use Baka\Database\Model;
 class Modules extends Model
 {
     /**
+     * @var integer
+     */
+    public $id;
+
+    /**
      * @var string
      */
     public $name;
