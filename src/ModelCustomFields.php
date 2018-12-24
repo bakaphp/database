@@ -185,7 +185,7 @@ class ModelCustomFields extends Model
     protected function saveCustomFields(): bool
     {
         //find the custom field module
-        if (!$module = CustomFields\Modules::findFirstByName($this->getSource())) {
+        if (!$module = Modules::findFirstByName($this->getSource())) {
             return false;
         }
 
@@ -199,7 +199,7 @@ class ModelCustomFields extends Model
             $customModel = new $classNameWithNameSpace();
 
             //validate the custome field by it model
-            if ($customField = CustomFields\CustomFields::findFirst(['conditions' => 'name = ?0 and modules_id = ?1', 'bind' => [$key, $module->id]])) {
+            if ($customField = CustomFields::findFirst(['conditions' => 'name = ?0 and modules_id = ?1', 'bind' => [$key, $module->id]])) {
                 //throw new Exception("this custom field doesnt exist");
 
                 $customModel->setCustomId($this->getId());
