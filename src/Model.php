@@ -2,8 +2,6 @@
 
 namespace Baka\Database;
 
-use Phalcon\Mvc\Model\ResultsetInterface;
-
 class Model extends \Phalcon\Mvc\Model
 {
     /**

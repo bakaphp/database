@@ -24,8 +24,10 @@ class ModelCustomFields extends Model
      */
     public static function getCustomFields($findResults, $getById = false)
     {
-        if (count($findResults) == 1 && $getById) {
-            $findResults = [$findResults];
+        if (is_array($findResults)) {
+            if (count($findResults) == 1 && $getById) {
+                $findResults = [$findResults];
+            }
         }
 
         $results = [];
