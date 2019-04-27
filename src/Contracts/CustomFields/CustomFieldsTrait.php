@@ -1,20 +1,21 @@
 <?php
 
-namespace Baka\Database;
+namespace Baka\Database\Contracts\CustomFields;
 
 use Baka\Database\CustomFields\Modules;
 use Baka\Database\CustomFields\CustomFields;
 use Exception;
+use ReflectionClass;
 
 /**
- * Custom field class
+ * Custom field class.
  */
-class ModelCustomFields extends Model
+trait CustomFieldsTrait
 {
     protected $customFields = [];
 
     /**
-     * Get a models custom fields
+     * Get a models custom fields.
      *
      * @param mixed $findResults
      *
@@ -32,7 +33,7 @@ class ModelCustomFields extends Model
 
         $results = [];
 
-        $classReflection = (new \ReflectionClass($findResults[0]));
+        $classReflection = (new ReflectionClass($findResults[0]));
         $className = $classReflection->getShortName();
         $classNamespace = $classReflection->getNamespaceName();
 
@@ -73,7 +74,7 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * Get all custom fields of the given object
+     * Get all custom fields of the given object.
      *
      * @param  array  $fields
      * @return Phalcon\Mvc\Model
@@ -123,7 +124,7 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * Allows to query a set of records that match the specified conditions
+     * Allows to query a set of records that match the specified conditions.
      *
      * @param mixed $parameters
      * @return Content[]
@@ -152,7 +153,7 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * Allows to query the first record that match the specified conditions
+     * Allows to query the first record that match the specified conditions.
      *
      * @param mixed $parameters
      * @return Content
@@ -176,7 +177,7 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * Create new custom fields
+     * Create new custom fields.
      *
      * We never update any custom fields, we delete them and create them again, thats why we call cleanCustomFields before updates
      *
@@ -190,7 +191,7 @@ class ModelCustomFields extends Model
         }
 
         //we need a new instane to avoid overwrite
-        $reflector = new \ReflectionClass($this);
+        $reflector = new ReflectionClass($this);
         $classNameWithNameSpace = $reflector->getNamespaceName() . '\\' . $reflector->getShortName() . 'CustomFields';
 
         //if all is good now lets get the custom fields and save them
@@ -220,14 +221,14 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * Remove all the custom fields from the entity
+     * Remove all the custom fields from the entity.
      *
      * @param  int $id
      * @return \Phalcon\MVC\Models
      */
     public function cleanCustomFields(int $id): bool
     {
-        $reflector = new \ReflectionClass($this);
+        $reflector = new ReflectionClass($this);
         $classNameWithNameSpace = $reflector->getNamespaceName() . '\\' . $reflector->getShortName() . 'CustomFields';
         $customModel = new $classNameWithNameSpace();
 
@@ -238,7 +239,7 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * Before create
+     * Before create.
      *
      * @return void
      */
@@ -252,7 +253,7 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * Before update
+     * Before update.
      *
      * @return void
      */
@@ -262,7 +263,7 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * Set the custom field to update a custom field module
+     * Set the custom field to update a custom field module.
      *
      * @param array $fields [description]
      */
@@ -272,7 +273,7 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * After the module was created we need to add it custom fields
+     * After the module was created we need to add it custom fields.
      *
      * @return  void
      */
@@ -282,16 +283,15 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * After save
+     * After save.
      * @return void
      */
     public function afterSave()
     {
-        //
     }
 
     /**
-     * After the model was update we need to update its custom fields
+     * After the model was update we need to update its custom fields.
      *
      * @return void
      */
@@ -317,7 +317,7 @@ class ModelCustomFields extends Model
     }
 
     /**
-     * After delete remove the custom fields
+     * After delete remove the custom fields.
      *
      * @return void
      */

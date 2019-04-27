@@ -4,27 +4,22 @@ namespace Baka\Database\CustomFields;
 
 use Baka\Database\Model;
 
-class Modules extends Model
+class FieldsTypeSettings extends Model
 {
     /**
-     * @var integer
+     * @var int
      */
-    public $id;
-
-    /**
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     * @var string
-     */
-    public $model_name;
+    public $custom_fields_types_id;
 
     /**
      * @var string
      */
     public $name;
+
+    /**
+     * @var string
+     */
+    public $value;
 
     /**
      * Returns the name of the table associated to the model.
@@ -33,6 +28,6 @@ class Modules extends Model
      */
     public function getSource(): string
     {
-        return 'custom_fields_modules';
+        return 'custom_fields_types_settings';
     }
 }
