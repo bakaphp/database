@@ -5,9 +5,8 @@ namespace Test\Model;
 use Baka\Database\Model;
 use Baka\Database\Contracts\CustomFields\CustomFieldsTrait;
 
-class Leads extends Model
+class LeadsNormal extends Model
 {
-    use CustomFieldsTrait;
     
     /**
      * Specify the table.

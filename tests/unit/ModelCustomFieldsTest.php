@@ -1,8 +1,8 @@
 <?php
 
-use Test\Model\LeadsNormal as Leads;
+use Test\Model\Leads;
 
-class ModelTest extends PhalconUnitTestCase
+class ModelCustomFieldsTest extends PhalconUnitTestCase
 {
     /**
      * Create the index if it doesnt exist to run some test.
@@ -12,7 +12,6 @@ class ModelTest extends PhalconUnitTestCase
     public function testBakaModel()
     {
         $lead = Leads::findFirst();
-
         $this->assertTrue(is_object($lead));
     }
 
@@ -30,6 +29,9 @@ class ModelTest extends PhalconUnitTestCase
         $lead->users_id = 1;
         $lead->companies_id = 1;
         $lead->leads_owner_id = 1;
+        $lead->setCustomFields([
+            'refernce' => $this->faker->name
+        ]);
         
         $this->assertTrue($lead->saveOrFail());
     }
@@ -43,7 +45,10 @@ class ModelTest extends PhalconUnitTestCase
     {
         $lead = Leads::findFirst();
         $lead->lastname = $this->faker->lastname;
-        
+        $lead->setCustomFields([
+            'refernce' => $this->faker->name
+        ]);
+
         $this->assertTrue($lead->updateOrFail());
     }
 

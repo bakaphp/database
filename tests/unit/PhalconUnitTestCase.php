@@ -2,6 +2,7 @@
 
 use \Phalcon\Di;
 use \Phalcon\Test\UnitTestCase as PhalconTestCase;
+use Baka\Auth\Models\Apps;
 
 abstract class PhalconUnitTestCase extends PhalconTestCase
 {
@@ -77,6 +78,10 @@ abstract class PhalconUnitTestCase extends PhalconTestCase
 
         $di->set('modelsMetadata', function () {
             return new Phalcon\Mvc\Model\Metadata\Memory();
+        }, true);
+
+        $di->set('app', function () {
+            return Apps::findFirst();
         }, true);
 
         $di->set('db', function () use ($config, $di) {

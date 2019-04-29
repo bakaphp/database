@@ -4,8 +4,10 @@ namespace Baka\Database\Contracts\CustomFields;
 
 use Baka\Database\CustomFields\Modules;
 use Baka\Database\CustomFields\CustomFields;
+use Baka\Database\Model as BakaModel;
 use Exception;
 use ReflectionClass;
+use PDO;
 
 /**
  * Custom field class.
@@ -43,7 +45,7 @@ trait CustomFieldsTrait
             $model = $classNamespace . '\\' . ucfirst($module->name) . 'CustomFields';
             $modelId = strtolower($module->name) . '_id';
 
-            $customFields = CustomFields::findByModulesId($module->id);
+            $customFields = CustomFields::findByModulesId($module->getId());
 
             if (is_array($findResults)) {
                 $findResults[0] = $findResults[0]->toArray();
@@ -56,7 +58,7 @@ trait CustomFieldsTrait
                     $values = [];
                     $moduleValues = $model::find([
                         $modelId . ' = ?0 AND custom_fields_id = ?1',
-                        'bind' => [$result['id'], $customField->id]
+                        'bind' => [$result['id'], $customField->getId()]
                     ]);
 
                     if ($moduleValues->count()) {
@@ -81,10 +83,8 @@ trait CustomFieldsTrait
      */
     public function getAllCustomFields(array $fields = [])
     {
-        if (!$models = Modules::findFirstByName($this->getSource())) {
-            return;
-        }
-
+        $module = Modules::getByCustomeFieldModuleByModuleAndApp(get_class($this), $this->di->getApp());
+        
         $conditions = [];
         $fieldsIn = null;
 
@@ -92,9 +92,9 @@ trait CustomFieldsTrait
             $fieldsIn = " and name in ('" . implode("','", $fields) . ')';
         }
 
-        $conditions = 'modules_id = ? ' . $fieldsIn;
+        //$conditions = 'modules_id = ? ' . $fieldsIn;
 
-        $bind = [$this->getId(), $models->getId()];
+        $bind = [$this->getId(), $module->getId()];
 
         $customFieldsValueTable = $this->getSource() . '_custom_fields';
 
@@ -108,15 +108,15 @@ trait CustomFieldsTrait
                                         FROM {$customFieldsValueTable} l,
                                              custom_fields c
                                         WHERE c.id = l.custom_fields_id
-                                          AND l.leads_id = ?
-                                          AND c.modules_id = ? ");
+                                          AND l.{$this->getSource()}_id = ?
+                                          AND c.custom_fields_modules_id = ? ");
 
         $result->execute($bind);
 
         // $listOfCustomFields = $result->fetchAll();
         $listOfCustomFields = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $listOfCustomFields[$row->name] = $row->value;
         }
 
@@ -167,7 +167,7 @@ trait CustomFieldsTrait
 
             if (is_array($customFields)) {
                 //field the object
-                foreach ($result->getAllCustomFields() as $key => $value) {
+                foreach ($customFields as $key => $value) {
                     $result->{$key} = $value;
                 }
             }
@@ -186,28 +186,21 @@ trait CustomFieldsTrait
     protected function saveCustomFields(): bool
     {
         //find the custom field module
-        if (!$module = Modules::findFirstByName($this->getSource())) {
-            return false;
-        }
-
-        //we need a new instane to avoid overwrite
-        $reflector = new ReflectionClass($this);
-        $classNameWithNameSpace = $reflector->getNamespaceName() . '\\' . $reflector->getShortName() . 'CustomFields';
+        $module = Modules::getByCustomeFieldModuleByModuleAndApp(get_class($this), $this->di->getApp());
 
         //if all is good now lets get the custom fields and save them
         foreach ($this->customFields as $key => $value) {
             //create a new obj per itration to se can save new info
-            $customModel = new $classNameWithNameSpace();
-
+            $customModel = $this->getCustomFieldModel();
             //validate the custome field by it model
-            if ($customField = CustomFields::findFirst(['conditions' => 'name = ?0 and modules_id = ?1', 'bind' => [$key, $module->id]])) {
+            if ($customField = CustomFields::findFirst(['conditions' => 'name = ?0 and custom_fields_modules_id = ?1', 'bind' => [$key, $module->getId()]])) {
                 //throw new Exception("this custom field doesnt exist");
 
                 $customModel->setCustomId($this->getId());
-                $customModel->custom_fields_id = $customField->id;
+                $customModel->custom_fields_id = $customField->getId();
                 $customModel->value = $value;
                 $customModel->created_at = date('Y-m-d H:i:s');
-
+                
                 if (!$customModel->save()) {
                     throw new Exception('Custome ' . $key . ' - ' . $this->customModel->getMessages()[0]);
                 }
@@ -228,14 +221,37 @@ trait CustomFieldsTrait
      */
     public function cleanCustomFields(int $id): bool
     {
-        $reflector = new ReflectionClass($this);
-        $classNameWithNameSpace = $reflector->getNamespaceName() . '\\' . $reflector->getShortName() . 'CustomFields';
-        $customModel = new $classNameWithNameSpace();
+        $customModel = $this->getCustomFieldModel();
 
         //return $customModel->find(['conditions' => $this->getSource() . '_id = ?0', 'bind' => [$id]])->delete();
         //we need to run the query since we dont have primary key
         $result = $this->getReadConnection()->prepare("DELETE FROM {$customModel->getSource()} WHERE " . $this->getSource() . '_id = ?');
         return $result->execute([$id]);
+    }
+
+    /**
+     * Given this object get its custome field table.
+     *
+     * @return string
+     */
+    public function getModelCustomFieldClassName() : string
+    {
+        $reflector = new ReflectionClass($this);
+        $classNameWithNameSpace = $reflector->getNamespaceName() . '\\' . $reflector->getShortName() . 'CustomFields';
+
+        return $classNameWithNameSpace;
+    }
+
+    /**
+     * Given this object get its custome field Module.
+     *
+     * @return BakaModel
+     */
+    public function getCustomFieldModel() : BakaModel
+    {
+        $customFieldModuleName = $this->getModelCustomFieldClassName();
+
+        return new $customFieldModuleName();
     }
 
     /**

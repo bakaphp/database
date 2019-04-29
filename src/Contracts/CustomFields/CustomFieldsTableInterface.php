@@ -6,7 +6,7 @@ namespace Baka\Database\Contracts\CustomFields;
  * Trait to implemente everything needed from a simple CRUD in a API
  *
  */
-interface CustomFieldsInterface
+interface CustomFieldsTableInterface
 {
     /**
      * Set the custom primary field id
