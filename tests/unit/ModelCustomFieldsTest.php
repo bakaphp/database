@@ -1,6 +1,7 @@
 <?php
 
 use Test\Model\Leads;
+use Test\Model\LeadsCustomFields;
 
 class ModelCustomFieldsTest extends PhalconUnitTestCase
 {
@@ -50,6 +51,19 @@ class ModelCustomFieldsTest extends PhalconUnitTestCase
         ]);
 
         $this->assertTrue($lead->updateOrFail());
+    }
+
+    /**
+     * Check taht a custom field has it atrribute
+     *
+     * @return void
+     */
+    public function testGetCustomFieldRow()
+    {
+        $leadCustomField = LeadsCustomFields::findFirst();
+        $lead = Leads::findFirst($leadCustomField->leads_id);
+
+        $this->assertTrue(isset($lead->refernce));
     }
 
 }

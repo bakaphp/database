@@ -99,17 +99,17 @@ trait CustomFieldsTrait
         $customFieldsValueTable = $this->getSource() . '_custom_fields';
 
         $result = $this->getReadConnection()->prepare("SELECT l.{$this->getSource()}_id,
-                                               c.id as field_id,
-                                               c.name,
-                                               l.value ,
-                                               c.users_id,
-                                               l.created_at,
-                                               l.updated_at
-                                        FROM {$customFieldsValueTable} l,
-                                             custom_fields c
-                                        WHERE c.id = l.custom_fields_id
-                                          AND l.{$this->getSource()}_id = ?
-                                          AND c.custom_fields_modules_id = ? ");
+                                                        c.id as field_id,
+                                                        c.name,
+                                                        l.value ,
+                                                        c.users_id,
+                                                        l.created_at,
+                                                        l.updated_at
+                                                        FROM {$customFieldsValueTable} l,
+                                                        custom_fields c
+                                                        WHERE c.id = l.custom_fields_id
+                                                            AND l.{$this->getSource()}_id = ?
+                                                            AND c.custom_fields_modules_id = ? ");
 
         $result->execute($bind);
 
