@@ -2,6 +2,10 @@
 
 namespace Baka\Database;
 
+use Baka\Database\Exception\ModelNotFoundException;
+use Baka\Database\Exception\ModelNotProcessedException;
+use Phalcon\Mvc\Model\MetaData\Memory as MetaDataMemory;
+
 class Model extends \Phalcon\Mvc\Model
 {
     /**
@@ -25,7 +29,7 @@ class Model extends \Phalcon\Mvc\Model
     public $is_deleted = 0;
 
     /**
-     * Get the primary id of this model
+     * Get the primary id of this model.
      *
      * @return int
      */
@@ -35,7 +39,7 @@ class Model extends \Phalcon\Mvc\Model
     }
 
     /**
-     * before validate create
+     * before validate create.
      *
      * @return void
      */
@@ -45,7 +49,7 @@ class Model extends \Phalcon\Mvc\Model
     }
 
     /**
-     * before validate update
+     * before validate update.
      *
      * @return void
      */
@@ -55,7 +59,7 @@ class Model extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Before create
+     * Before create.
      *
      * @return void
      */
@@ -67,7 +71,7 @@ class Model extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Before update
+     * Before update.
      *
      * @return void
      */
@@ -77,7 +81,7 @@ class Model extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Soft Delete
+     * Soft Delete.
      *
      * @return void
      */
@@ -89,8 +93,65 @@ class Model extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Get by Id or thrown an exceptoin.
+     *
+     * @param mixed $id
+     * @return self
+     */
+    public static function getByIdOrFail($id): self
+    {
+        if ($record = self::findFirst($id)) {
+            return $record;
+        }
+
+        throw new ModelNotFoundException('Record not found');
+    }
+
+    /**
+    * save model or throw an exception.
+    *
+    * @param null|mixed $data
+    * @param null|mixed $whiteList
+    */
+    public function saveOrFail($data = null, $whiteList = null): bool
+    {
+        if ($savedModel = parent::save($data, $whiteList)) {
+            return $savedModel;
+        }
+
+        $this->throwErrorMessages();
+    }
+
+    /**
+    * update model or throw an exception.
+    *
+    * @param null|mixed $data
+    * @param null|mixed $whiteList
+    */
+    public function updateOrFail($data = null, $whiteList = null): bool
+    {
+        if ($updatedModel = static::update($data, $whiteList)) {
+            return $updatedModel;
+        }
+
+        $this->throwErrorMessages();
+    }
+
+    /**
+    * Delete the model or throw an exception.
+    */
+    public function deleteOrFail(): bool
+    {
+        if (!parent::delete()) {
+            $this->throwErrorMessages();
+        }
+
+        return true;
+    }
+
+    /**
      * Since Phalcon 3, they pass model objet throught the toArray function when we call json_encode, that can fuck u up, if you modify the obj
-     * so we need a way to convert it to array without loosing all the extra info we add
+     * so we need a way to convert it to array without loosing all the extra info we add.
      *
      * @return array
      */
@@ -106,5 +167,39 @@ class Model extends \Phalcon\Mvc\Model
         }
 
         return $result;
+    }
+
+    /**
+     * Get the list of primary keys from the current model.
+     *
+     * @return array
+     */
+    protected function getPrimaryKeys(): array
+    {
+        $metaData = new MetaDataMemory();
+        return $metaData->getPrimaryKeyAttributes($this);
+    }
+
+    /**
+     * Get get the primarey key, if we have more than 1 , use keys.
+     *
+     * @return array
+     */
+    protected function getPrimaryKey(): string
+    {
+        $primaryKeys = $this->getPrimaryKeys();
+
+        return !empty($primaryKeys) ? $primaryKeys[0] : [];
+    }
+
+    /**
+    * Throws an exception with including all validation messages that were retrieved.
+    * @throws ModelNotProcessedException
+    */
+    private function throwErrorMessages(): void
+    {
+        throw new ModelNotProcessedException(
+            current($this->getMessages())->getMessage()
+        );
     }
 }

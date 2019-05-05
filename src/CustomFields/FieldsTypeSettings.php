@@ -3,11 +3,13 @@
 namespace Baka\Database\CustomFields;
 
 use Baka\Database\Model;
-use Baka\Database\Contracts\HashTableTrait;
 
-class FieldsType extends Model
+class FieldsTypeSettings extends Model
 {
-    use HashTableTrait;
+    /**
+     * @var int
+     */
+    public $custom_fields_types_id;
 
     /**
      * @var string
@@ -17,12 +19,7 @@ class FieldsType extends Model
     /**
      * @var string
      */
-    public $description;
-
-    /**
-     * @var string
-     */
-    public $icon;
+    public $value;
 
     /**
      * Returns the name of the table associated to the model.
@@ -31,6 +28,6 @@ class FieldsType extends Model
      */
     public function getSource(): string
     {
-        return 'custom_fields_types';
+        return 'custom_fields_types_settings';
     }
 }
