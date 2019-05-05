@@ -9,14 +9,14 @@ class CustomFieldCliTest extends PhalconUnitTestCase
     use CustomFieldsTasksTrait;
 
     /**
-     * test the creation of a custom field
+     * test the creation of a custom field.
      *
      * @return void
      */
     public function testCreateModuleAction()
     {
         //drop the table
-        $this->getDI()->getDb()->query("DROP TABLE leads_custom_fields");
+        $this->getDI()->getDb()->query('DROP TABLE leads_custom_fields');
 
         $createTable = $this->createModuleAction([
             'leads', //name
@@ -24,25 +24,42 @@ class CustomFieldCliTest extends PhalconUnitTestCase
             'CRM', //app
         ]);
 
-        $this->assertTrue((bool) preg_match("/Custom Field Module Created/i", $createTable));
+        $this->assertTrue((bool) preg_match('/Custom Field Module Created/i', $createTable));
     }
 
     /**
-     * Create a field for this
+     * Create a field for this.
      *
      * @return void
      */
     public function testCustomFieldCreationAction()
     {
         $createFields = $this->createFieldsAction([
-            'refernce',//field name
+            'refernce', //field name
             'Test\Model\Leads', //model
             'CRM', //app
             'text', //type
             'null', //default files
         ]);
 
-        $this->assertTrue((bool) preg_match("/Custom field created for/i", $createFields));
+        $this->assertTrue((bool) preg_match('/Custom field created for/i', $createFields));
     }
 
+    /**
+     * Create a field for this.
+     *
+     * @return void
+     */
+    public function testCustomFieldCreationActionWithDefaultValues()
+    {
+        $createFields = $this->createFieldsAction([
+            'refernce', //field name
+            'Test\Model\Leads', //model
+            'CRM', //app
+            'text', //type
+            'label1:value1|label2:value2', //default files
+        ]);
+
+        $this->assertTrue((bool) preg_match('/Custom field created for/i', $createFields));
+    }
 }

@@ -4,12 +4,9 @@ namespace Test\Model;
 
 use Baka\Database\Model;
 use Baka\Database\Contracts\CustomFields\CustomFieldsTrait;
-use Baka\Database\Contracts\HashTableTrait;
 
-class LeadsNormal extends Model
+class LeadsNormalSettings extends Model
 {
-    use HashTableTrait;
-
     /**
      * Specify the table.
      *
@@ -17,6 +14,6 @@ class LeadsNormal extends Model
      */
     public function getSource()
     {
-        return 'leads';
+        return 'leads_settings';
     }
 }

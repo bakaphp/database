@@ -4,6 +4,7 @@ namespace Baka\Database\CustomFilters;
 
 use Baka\Database\Model;
 use Baka\Database\Contracts\HashTableTrait;
+use Baka\Database\Exception\Exception;
 
 class CustomFilters extends Model
 {
@@ -79,6 +80,32 @@ class CustomFilters extends Model
      */
     public function initialize(): void
     {
-        $this->hasMany('id', '\Baka\Database\CustomFilters\Conditions', 'id', ['alias' => 'conditions']);
+        $this->hasMany('id', '\Baka\Database\CustomFilters\Conditions', 'search_filter_id', ['alias' => 'conditions']);
+    }
+
+    /**
+     * Get the query for this filter.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function getQuery() : string
+    {
+        $conditions = $this->conditions;
+
+        if (empty($conditions)) {
+            throw new Exception('No conditions found on this filter to generate a query');
+        }
+
+        $sql = 'SELECT * FROM ' . $this->getSource() . ' WHERE ' . $this->sequence_logic;
+
+        $replace = [];
+        foreach ($conditions as $condition) {
+            $condition->value = !is_numeric($condition->value) ? "'{$condition->value}'" : $condition->value;
+            $replace[$condition->position] = $condition->field . ' ' . $condition->comparator . ' ' . $condition->value;
+        }
+
+        //replace the # for their array position
+        return strtr($sql, $replace);
     }
 }

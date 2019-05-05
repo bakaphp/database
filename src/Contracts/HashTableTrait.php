@@ -24,11 +24,21 @@ trait HashTableTrait
     protected $settingsModel;
 
     /**
-     * get the primary key
+     * get the primary key.
      *
      * @return void
      */
     abstract protected function getPrimaryKey();
+
+    /**
+     * Get the primary key of this model, this will only work on model with just 1 primary key.
+     *
+     * @return string
+     */
+    private function getSettingsPrimaryKey(): string
+    {
+        return $this->getSource() . '_' . $this->getPrimaryKey();
+    }
 
     /**
      * Set the setting model.
@@ -63,7 +73,7 @@ trait HashTableTrait
              * @todo this is stupid look for a better solution
              */
             $this->createSettingsModel();
-            $this->settingsModel->{$this->getPrimaryKey()} = $this->getId();
+            $this->settingsModel->{$this->getSettingsPrimaryKey()} = $this->getId();
         }
 
         $this->settingsModel->name = $key;
@@ -81,7 +91,7 @@ trait HashTableTrait
     protected function getSettingsByKey(string $key)
     {
         return $this->settingsModel->findFirst([
-            'conditions' => "{$this->getPrimaryKey()} = ?0 and name = ?1",
+            'conditions' => "{$this->getSettingsPrimaryKey()} = ?0 and name = ?1",
             'bind' => [$this->getId(), $key]
         ]);
     }

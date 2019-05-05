@@ -147,8 +147,8 @@ trait CustomFieldsTasksTrait
                 $customFieldsValues->custom_fields_id = $customFields->id;
 
                 if (count($value) > 1) {
-                    $customFieldsValues->label = trim($value[1]);
-                    $customFieldsValues->value = trim($value[0]);
+                    $customFieldsValues->label = trim($value[0]);
+                    $customFieldsValues->value = trim($value[1]);
                 } else {
                     $customFieldsValues->label = trim($value[0]);
                     $customFieldsValues->value = Slug::generate($value[0], '_');
@@ -160,7 +160,7 @@ trait CustomFieldsTasksTrait
             }
         }
 
-        echo "Custom field created for ".get_class($model)." On the App". $apps->name .PHP_EOL;
-        return  "Custom field created for ".get_class($model)." On the App". $apps->name .PHP_EOL;
+        echo 'Custom field created for ' . get_class($model) . ' On the App' . $apps->name . PHP_EOL;
+        return  'Custom field created for ' . get_class($model) . ' On the App' . $apps->name . PHP_EOL;
     }
 }

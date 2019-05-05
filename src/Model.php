@@ -170,7 +170,7 @@ class Model extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Get the list of primary keys from the current model
+     * Get the list of primary keys from the current model.
      *
      * @return array
      */
@@ -181,11 +181,11 @@ class Model extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Get get the primarey key, if we have more than 1 , use keys
+     * Get get the primarey key, if we have more than 1 , use keys.
      *
      * @return array
      */
-    protected function getPrimaryKey(): array
+    protected function getPrimaryKey(): string
     {
         $primaryKeys = $this->getPrimaryKeys();
 
@@ -194,6 +194,7 @@ class Model extends \Phalcon\Mvc\Model
 
     /**
     * Throws an exception with including all validation messages that were retrieved.
+    * @throws ModelNotProcessedException
     */
     private function throwErrorMessages(): void
     {

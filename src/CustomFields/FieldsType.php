@@ -8,7 +8,7 @@ use Baka\Database\Contracts\HashTableTrait;
 class FieldsType extends Model
 {
     use HashTableTrait;
-    
+
     /**
      * @var string
      */
