@@ -8,6 +8,7 @@ use Baka\Database\Model as BakaModel;
 use Exception;
 use ReflectionClass;
 use PDO;
+use Baka\Database\Model;
 
 /**
  * Custom field class.
@@ -23,56 +24,39 @@ trait CustomFieldsTrait
      *
      * @return Array
      *
-     * @TODO: Made a change to return a single record when $getById is true. Keeping an eye on it.
+     * @todo: Made a change to return a single record when $getById is true. Keeping an eye on it.
      */
-    public static function getCustomFields($findResults, $getById = false)
+    public static function getCustomFields(Model $findResults, $getById = false): array
     {
-        if (is_array($findResults)) {
-            if (count($findResults) == 1 && $getById) {
-                $findResults = [$findResults];
-            }
-        }
-
-        $results = [];
-
-        $classReflection = (new ReflectionClass($findResults[0]));
+        $modelObject = is_object($findResults) ? $findResults : $findResults[0];
+        $classReflection = (new ReflectionClass($modelObject));
         $className = $classReflection->getShortName();
         $classNamespace = $classReflection->getNamespaceName();
 
-        $module = Modules::findFirstByName($className);
-
-        if ($module) {
+        if ($module = Modules::findFirstByName($className)) {
             $model = $classNamespace . '\\' . ucfirst($module->name) . 'CustomFields';
             $modelId = strtolower($module->name) . '_id';
 
-            $customFields = CustomFields::findByModulesId($module->getId());
+            $customFields = CustomFields::findByCustomFieldsModulesId($module->getId());
 
-            if (is_array($findResults)) {
-                $findResults[0] = $findResults[0]->toArray();
-            } else {
-                $findResults = $findResults->toArray();
-            }
-            foreach ($findResults as $result) {
-                foreach ($customFields as $customField) {
-                    $result['custom_fields'][$customField->name] = '';
-                    $values = [];
-                    $moduleValues = $model::find([
-                        $modelId . ' = ?0 AND custom_fields_id = ?1',
-                        'bind' => [$result['id'], $customField->getId()]
-                    ]);
+            $result = $findResults->toArray();
 
-                    if ($moduleValues->count()) {
-                        $result['custom_fields'][$customField->name] = $moduleValues[0]->value;
-                    }
+            foreach ($customFields as $customField) {
+                $result['custom_fields'][$customField->name] = '';
+                $moduleValues = $model::find([
+                    $modelId . ' = ?0 AND custom_fields_id = ?1',
+                    'bind' => [$result['id'], $customField->getId()]
+                ]);
+
+                if ($moduleValues->count()) {
+                    $result['custom_fields'][$customField->name] = $moduleValues[0]->value;
                 }
-
-                $results[] = $result;
             }
 
-            return $getById ? $results[0] : $results;
+            return $result;
         }
 
-        return $getById ? $findResults[0]->toArray() : $findResults;
+        return $findResults->toArray();
     }
 
     /**
@@ -84,7 +68,7 @@ trait CustomFieldsTrait
     public function getAllCustomFields(array $fields = [])
     {
         $module = Modules::getByCustomeFieldModuleByModuleAndApp(get_class($this), $this->di->getApp());
-        
+
         $conditions = [];
         $fieldsIn = null;
 
@@ -200,7 +184,7 @@ trait CustomFieldsTrait
                 $customModel->custom_fields_id = $customField->getId();
                 $customModel->value = $value;
                 $customModel->created_at = date('Y-m-d H:i:s');
-                
+
                 if (!$customModel->save()) {
                     throw new Exception('Custome ' . $key . ' - ' . $this->customModel->getMessages()[0]);
                 }
