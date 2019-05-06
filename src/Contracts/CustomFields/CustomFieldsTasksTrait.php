@@ -106,7 +106,8 @@ trait CustomFieldsTasksTrait
             return;
         }
 
-        $name = $params[0];
+        $name = Slug::generate($params[0], '_');
+        $label = $params[0];
         $model = $params[1];
         $apps = $params[2];
         $type = $params[3] ?? 1;
@@ -121,14 +122,22 @@ trait CustomFieldsTasksTrait
 
         $modules = Modules::getByCustomeFieldModuleByModuleAndApp(get_class($model), $apps);
         $type = FieldsType::findFirstByName($type);
+        $customFields = null;
 
-        $customFields = new CustomFields();
+        $customFields = CustomFields::findFirst([
+            'conditions' => 'name = ?0 AND apps_id = ?1 and custom_fields_modules_id = ?2',
+            'bind' => [$name, $apps->getId(), $modules->getId()]
+        ]);
+
+        if (!is_object($customFields)) {
+            $customFields = new CustomFields();
+        }
         $customFields->users_id = 1; //alwasy 1
         $customFields->apps_id = $apps->getId(); //alwasy 1
         $customFields->custom_fields_modules_id = $modules->getId();
-        $customFields->label = $name;
         $customFields->fields_type_id = $type->getId(); //right now just text
-        $customFields->name = Slug::generate($customFields->label, '_');
+        $customFields->label = $label;
+        $customFields->name = $name;
 
         if (!$customFields->save()) {
             echo implode("\n", $customFields->getMessages());

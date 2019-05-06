@@ -71,16 +71,25 @@ class CustomFields extends Model
      * @param string $module
      * @return void
      */
-    public static function getFields(string $module)
+    public static function getFields(string $module): array
     {
+        $fields = [];
+
         if ($modules = Modules::findFirstByName($module)) {
-            return self::find([
+            $customFields = self::find([
                 'custom_fields_modules_id = ?0',
                 'bind' => [$modules->id],
-                'columns' => 'name, label, type'
             ]);
+
+            foreach ($customFields as $field) {
+                $fields[] = [
+                    'label' => !empty($field->label) ? $field->label : $field->name,
+                    'name' => $field->name,
+                    'type' => $field->type->name,
+                ];
+            }
         }
 
-        return null;
+        return $fields;
     }
 }
