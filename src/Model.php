@@ -5,6 +5,7 @@ namespace Baka\Database;
 use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Database\Exception\ModelNotProcessedException;
 use Phalcon\Mvc\Model\MetaData\Memory as MetaDataMemory;
+use RuntimeException;
 
 class Model extends \Phalcon\Mvc\Model
 {
@@ -100,7 +101,12 @@ class Model extends \Phalcon\Mvc\Model
      */
     public static function getByIdOrFail($id): self
     {
-        if ($record = self::findFirst($id)) {
+        $record = static::findFirst([
+            'conditions' => 'id = ?0 and is_deleted = ?1',
+            'bind' => [$id, 0]
+        ]);
+
+        if ($record) {
             return $record;
         }
 
@@ -115,7 +121,7 @@ class Model extends \Phalcon\Mvc\Model
     */
     public function saveOrFail($data = null, $whiteList = null): bool
     {
-        if ($savedModel = parent::save($data, $whiteList)) {
+        if ($savedModel = static::save($data, $whiteList)) {
             return $savedModel;
         }
 
@@ -189,14 +195,18 @@ class Model extends \Phalcon\Mvc\Model
     {
         $primaryKeys = $this->getPrimaryKeys();
 
-        return !empty($primaryKeys) ? $primaryKeys[0] : [];
+        if (empty($primaryKeys)) {
+            throw new RuntimeException('No primary key defined in this table ' . $this->getSource());
+        }
+
+        return $primaryKeys[0];
     }
 
     /**
     * Throws an exception with including all validation messages that were retrieved.
     * @throws ModelNotProcessedException
     */
-    private function throwErrorMessages(): void
+    protected function throwErrorMessages(): void
     {
         throw new ModelNotProcessedException(
             current($this->getMessages())->getMessage()

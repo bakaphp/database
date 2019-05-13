@@ -97,6 +97,28 @@ trait HashTableTrait
     }
 
     /**
+     * Get all the setting of a given record.
+     *
+     * @return array
+     */
+    public function getAllSettings(): array
+    {
+        $this->createSettingsModel();
+
+        $allSettings = [];
+        $settings = $this->settingsModel->find([
+            'conditions' => "{$this->getSettingsPrimaryKey()} = ?0",
+            'bind' => [$this->getId()]
+        ]);
+
+        foreach ($settings as $setting) {
+            $allSettings[$setting->name] = $setting->value;
+        }
+
+        return $allSettings;
+    }
+
+    /**
      * Get the settings base on the key.
      *
      * @param string $key

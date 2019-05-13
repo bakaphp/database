@@ -283,14 +283,6 @@ trait CustomFieldsTrait
     }
 
     /**
-     * After save.
-     * @return void
-     */
-    public function afterSave()
-    {
-    }
-
-    /**
      * After the model was update we need to update its custom fields.
      *
      * @return void
