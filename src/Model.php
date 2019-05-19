@@ -5,10 +5,19 @@ namespace Baka\Database;
 use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Database\Exception\ModelNotProcessedException;
 use Phalcon\Mvc\Model\MetaData\Memory as MetaDataMemory;
+use Phalcon\Mvc\Model as PhalconModel;
 use RuntimeException;
+use ReflectionClass;
 
-class Model extends \Phalcon\Mvc\Model
+class Model extends PhalconModel
 {
+    /**
+     * Define a model alias to throw exception msg to the end user.
+     *
+     * @var ?string
+     */
+    protected static $modelNameAlias = null;
+
     /**
      * @return int
      */
@@ -110,7 +119,7 @@ class Model extends \Phalcon\Mvc\Model
             return $record;
         }
 
-        throw new ModelNotFoundException('Record not found');
+        throw new ModelNotFoundException('Record not found in ' . self::getModelNameAlias());
     }
 
     /**
@@ -196,7 +205,7 @@ class Model extends \Phalcon\Mvc\Model
         $primaryKeys = $this->getPrimaryKeys();
 
         if (empty($primaryKeys)) {
-            throw new RuntimeException('No primary key defined in this table ' . $this->getSource());
+            throw new RuntimeException('No primary key defined in this Model ' . self::getModelNameAlias());
         }
 
         return $primaryKeys[0];
@@ -209,7 +218,17 @@ class Model extends \Phalcon\Mvc\Model
     protected function throwErrorMessages(): void
     {
         throw new ModelNotProcessedException(
-            current($this->getMessages())->getMessage()
+            self::getModelNameAlias() . ' - ' . current($this->getMessages())->getMessage()
         );
+    }
+
+    /**
+     * Get the model name alias to use for public error msg.
+     *
+     * @return string
+     */
+    protected static function getModelNameAlias(): string
+    {
+        return self::modelNameAlias ?: (new ReflectionClass(self))->getShortName();
     }
 }

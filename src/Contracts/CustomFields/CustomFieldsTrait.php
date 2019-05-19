@@ -160,7 +160,7 @@ trait CustomFieldsTrait
                 }
             }
         }
-
+        
         return $result;
     }
 
@@ -297,7 +297,7 @@ trait CustomFieldsTrait
      */
     public function afterUpdate()
     {
-        //only clean and change custom fields if they are been sent
+        //only clean and change custom fields if they have been set
         if (!empty($this->customFields)) {
             //replace old custom with new
             $allCustomFields = $this->getAllCustomFields();
