@@ -59,7 +59,7 @@ class CustomFields extends Model
      *
      * @return void
      */
-    public function initialize(): void
+    public function initialize()
     {
         $this->belongsTo('fields_type_id', '\Baka\Database\CustomFields\FieldsType', 'id', ['alias' => 'type']);
         $this->belongsTo('custom_fields_modules_id', '\Baka\Database\CustomFields\Module', 'id', ['alias' => 'module']);

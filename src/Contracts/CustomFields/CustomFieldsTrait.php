@@ -67,7 +67,11 @@ trait CustomFieldsTrait
      */
     public function getAllCustomFields(array $fields = [])
     {
-        $module = Modules::getByCustomeFieldModuleByModuleAndApp(get_class($this), $this->di->getApp());
+        try {
+            $module = Modules::getByCustomeFieldModuleByModuleAndApp(get_class($this), $this->di->getApp());
+        } catch (Exception $e) {
+            return [];
+        }
 
         $conditions = [];
         $fieldsIn = null;
@@ -156,7 +160,7 @@ trait CustomFieldsTrait
                 }
             }
         }
-
+        
         return $result;
     }
 
@@ -170,7 +174,11 @@ trait CustomFieldsTrait
     protected function saveCustomFields(): bool
     {
         //find the custom field module
-        $module = Modules::getByCustomeFieldModuleByModuleAndApp(get_class($this), $this->di->getApp());
+        try {
+            $module = Modules::getByCustomeFieldModuleByModuleAndApp(get_class($this), $this->di->getApp());
+        } catch (Exception $e) {
+            return false;
+        }
 
         //if all is good now lets get the custom fields and save them
         foreach ($this->customFields as $key => $value) {
@@ -283,21 +291,13 @@ trait CustomFieldsTrait
     }
 
     /**
-     * After save.
-     * @return void
-     */
-    public function afterSave()
-    {
-    }
-
-    /**
      * After the model was update we need to update its custom fields.
      *
      * @return void
      */
     public function afterUpdate()
     {
-        //only clean and change custom fields if they are been sent
+        //only clean and change custom fields if they have been set
         if (!empty($this->customFields)) {
             //replace old custom with new
             $allCustomFields = $this->getAllCustomFields();
