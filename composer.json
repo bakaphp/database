@@ -2,30 +2,37 @@
     "name": "baka/database",
     "description": "Baka Databse component",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "kaioken",
-            "email": "max@mctekk.com"
-        }
-    ],
-    "minimum-stability": "dev",
+    "authors": [{
+        "name": "kaioken",
+        "email": "max@mctekk.com"
+    }],
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.1",
         "ext-phalcon": ">=3.0.0",
+        "baka/auth": "^0.2",
         "vlucas/phpdotenv": "^2.0",
-        "phalcon/incubator": ">=3.0"
+        "phalcon/incubator": ">=3.0",
+        "fzaninotto/faker": "^1.9@dev",
+        "robmorgan/phinx": "^0.10",
+        "odan/phinx-migrations-generator": "dev-master"
+
     },
     "require-dev": {
+        "codeception/codeception": "^2.4",
         "codeception/verify": "*",
         "vlucas/phpdotenv": "^2.0",
-        "phalcon/incubator": ">=3.0"
+        "phalcon/incubator": "~3.3",
+        "dmkit/phalcon-jwt-auth": "dev-master",
+        "elasticsearch/elasticsearch": "^6.1",
+        "odan/phinx-migrations-generator": "dev-master"
+
     },
     "autoload": {
         "psr-4": {
             "Baka\\Database\\": "src/"
         }
     },
-     "autoload-dev": {
+    "autoload-dev": {
         "psr-4": {
             "Baka\\Database\\": "src/"
         }

@@ -3,9 +3,12 @@
 namespace Baka\Database\CustomFields;
 
 use Baka\Database\Model;
+use Baka\Database\Contracts\HashTableTrait;
 
 class CustomFields extends Model
 {
+    use HashTableTrait;
+
     /**
      * @var integer
      */
@@ -22,14 +25,19 @@ class CustomFields extends Model
     public $user_id;
 
     /**
-     * @var string
+     * @var int
      */
-    public $name;
+    public $apps_id;
 
     /**
      * @var int
      */
-    public $modules_id;
+    public $custom_fields_modules_id;
+
+    /**
+     * @var string
+     */
+    public $name;
 
     /**
      * @var int
@@ -51,29 +59,37 @@ class CustomFields extends Model
      *
      * @return void
      */
-    public function initialize(): void
+    public function initialize()
     {
-        $this->hasOne('fields_type_id', '\Baka\Database\CustomFields\FieldsType', 'id', ['alias' => 'type']);
+        $this->belongsTo('fields_type_id', '\Baka\Database\CustomFields\FieldsType', 'id', ['alias' => 'type']);
+        $this->belongsTo('custom_fields_modules_id', '\Baka\Database\CustomFields\Module', 'id', ['alias' => 'module']);
     }
 
     /**
-     * Get the felds of this custom field module
+     * Get the felds of this custom field module.
      *
      * @param string $module
      * @return void
      */
-    public static function getFields(string $module)
+    public static function getFields(string $module): array
     {
-        $modules = Modules::findFirstByName($module);
+        $fields = [];
 
-        if ($modules) {
-            return self::find([
-                'modules_id = ?0',
+        if ($modules = Modules::findFirstByName($module)) {
+            $customFields = self::find([
+                'custom_fields_modules_id = ?0',
                 'bind' => [$modules->id],
-                'columns' => 'name, label, type'
             ]);
+
+            foreach ($customFields as $field) {
+                $fields[] = [
+                    'label' => !empty($field->label) ? $field->label : $field->name,
+                    'name' => $field->name,
+                    'type' => $field->type->name,
+                ];
+            }
         }
 
-        return null;
+        return $fields;
     }
 }

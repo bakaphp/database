@@ -17,14 +17,9 @@ class FieldsValues extends Model
     public $value;
 
     /**
-     * @var string
+     * @var int
      */
-    public $created_at;
-
-    /**
-     * @var string
-     */
-    public $updated_at;
+    public $is_default;
 
     /**
      * Returns the name of the table associated to the model.
@@ -33,6 +28,6 @@ class FieldsValues extends Model
      */
     public function getSource(): string
     {
-        return 'fields_values';
+        return 'custom_fields_values';
     }
 }
