@@ -3,7 +3,6 @@
 namespace Baka\Database\Contracts\CustomFilters;
 
 use Baka\Database\CustomFilters\CustomFilters;
-use Baka\Database\Model;
 use Baka\Database\CustomFilters\Conditions;
 use Baka\Database\Exception\CustomFilterException;
 use RuntimeException;
@@ -67,17 +66,15 @@ trait CustomFilterTrait
      * [
      *     [
      *          {
-     *            "api_name": "Leads.Annual_Revenue",
      *              "comparator": "equal",
      *              "value": "333",
-     *               "field_label": "Annual Revenue"
+     *              "field": "Annual Revenue"
      *           },
      *           "and",
      *           {
-     *               "api_name": "Leads.Campaign_Source",
      *               "comparator": "equal",
      *               "value": "${NOTEMPTY}",
-     *               "field_label": "Campaign Name"
+     *               "field": "Campaign Name"
      *           }
      *       ]
      *   ]
@@ -99,7 +96,7 @@ trait CustomFilterTrait
 
             $customFilterCondition = new Conditions();
             $customFilterCondition->search_filter_id = $filter->getId();
-            $customFilterCondition->position = $i > 0 ? $i : $i+1;
+            $customFilterCondition->position = $i > 0 ? $i : $i + 1;
             $customFilterCondition->value = $criterias[$i]['value'];
             $customFilterCondition->field = $criterias[$i]['field'];
             $customFilterCondition->comparator = $criterias[$i]['comparator'];

@@ -81,6 +81,7 @@ class CustomFilters extends Model
     public function initialize(): void
     {
         $this->hasMany('id', '\Baka\Database\CustomFilters\Conditions', 'search_filter_id', ['alias' => 'conditions']);
+        $this->belongsTo('system_modules_id', '\Baka\Database\SystemModules', 'id', ['alias' => 'systemModule']);
     }
 
     /**
@@ -97,7 +98,9 @@ class CustomFilters extends Model
             throw new Exception('No conditions found on this filter to generate a query');
         }
 
-        $sql = 'SELECT * FROM ' . $this->getSource() . ' WHERE ' . $this->sequence_logic;
+        $module = new $this->systemModule->model_name;
+
+        $sql = 'SELECT * FROM ' . $module->getSource() . ' WHERE ' . $this->sequence_logic;
 
         $replace = [];
         foreach ($conditions as $condition) {
