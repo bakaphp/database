@@ -5,6 +5,8 @@ namespace Baka\Database;
 use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Database\Exception\ModelNotProcessedException;
 use Phalcon\Mvc\Model\MetaData\Memory as MetaDataMemory;
+use Phalcon\Mvc\Model\ResultsetInterface;
+use ReflectionClass;
 
 class Model extends \Phalcon\Mvc\Model
 {
@@ -100,11 +102,43 @@ class Model extends \Phalcon\Mvc\Model
      */
     public static function getByIdOrFail($id): self
     {
-        if ($record = self::findFirst($id)) {
+        if ($record = static::findFirst($id)) {
             return $record;
         }
 
-        throw new ModelNotFoundException('Record not found');
+        throw new ModelNotFoundException((new ReflectionClass(new static))->getShortName() . ' Record not found');
+    }
+
+    /**
+     * Query the first record that matches the specified conditions.
+     *
+     * @param array $parameters
+     * @return self
+     */
+    public static function findFirstOrFail($parameters = null): self
+    {
+        $result = static::findFirst($parameters);
+        if (!$result) {
+            throw new ModelNotFoundException((new ReflectionClass(new static))->getShortName() . ' Record not found');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Query the first record that matches the specified conditions.
+     *
+     * @param array $parameters
+     * @return self
+     */
+    public static function findOrFail($parameters = null): ResultsetInterface
+    {
+        $results = static::find($parameters);
+        if (!$results) {
+            throw new ModelNotFoundException((new ReflectionClass(new static))->getShortName() . ' Record not found');
+        }
+
+        return $results;
     }
 
     /**
@@ -165,6 +199,10 @@ class Model extends \Phalcon\Mvc\Model
                 unset($result[$key]);
             }
         }
+        
+        //remove properties we add 
+        unset($result['customFields']);
+        unset($result['uploadedFiles']);
 
         return $result;
     }
@@ -199,7 +237,17 @@ class Model extends \Phalcon\Mvc\Model
     private function throwErrorMessages(): void
     {
         throw new ModelNotProcessedException(
-            current($this->getMessages())->getMessage()
+            (new ReflectionClass(new static))->getShortName() . ' ' . current($this->getMessages())->getMessage()
         );
+    }
+
+    /**
+     * Does this model have custom fields?
+     *
+     * @return boolean
+     */
+    public function hasCustomFields(): bool
+    {
+        return isset($this->customFields);
     }
 }
