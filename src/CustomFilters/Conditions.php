@@ -10,7 +10,7 @@ class Conditions extends Model
     /**
      * @var integer
      */
-    public $search_filter_id;
+    public $custom_filter_id;
 
     /**
      * @var int
@@ -44,6 +44,6 @@ class Conditions extends Model
      */
     public function initialize(): void
     {
-        $this->belongsTo('search_filter_id', '\Baka\Database\CustomFilters\CustomFilters', 'id', ['alias' => 'filter']);
+        $this->belongsTo('custom_filter_id', '\Baka\Database\CustomFilters\CustomFilters', 'id', ['alias' => 'filter']);
     }
 }

@@ -80,7 +80,7 @@ class CustomFilters extends Model
      */
     public function initialize(): void
     {
-        $this->hasMany('id', '\Baka\Database\CustomFilters\Conditions', 'search_filter_id', ['alias' => 'conditions']);
+        $this->hasMany('id', '\Baka\Database\CustomFilters\Conditions', 'custom_filter_id', ['alias' => 'conditions']);
         $this->belongsTo('system_modules_id', '\Baka\Database\SystemModules', 'id', ['alias' => 'systemModule']);
     }
 
