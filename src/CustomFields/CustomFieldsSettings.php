@@ -4,7 +4,7 @@ namespace Baka\Database\CustomFields;
 
 use Baka\Database\Model;
 
-class CustomFields extends Model
+class CustomFieldsSettings extends Model
 {
     /**
      * @var integer
