@@ -40,6 +40,11 @@ class CustomFields extends Model
     public $name;
 
     /**
+     * @var string
+     */
+    public $label;
+
+    /**
      * @var int
      */
     public $fields_type_id;

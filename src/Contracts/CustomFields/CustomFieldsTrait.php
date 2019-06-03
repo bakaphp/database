@@ -15,48 +15,38 @@ use Baka\Database\Model;
  */
 trait CustomFieldsTrait
 {
-    protected $customFields = [];
+    public $customFields = [];
 
     /**
-     * Get a models custom fields.
-     *
-     * @param mixed $findResults
+     * Get the custom fields of the current object.
      *
      * @return Array
      *
-     * @todo: Made a change to return a single record when $getById is true. Keeping an eye on it.
      */
-    public static function getCustomFields(Model $findResults, $getById = false): array
+    public function getCustomFields(): array
     {
-        $modelObject = is_object($findResults) ? $findResults : $findResults[0];
-        $classReflection = (new ReflectionClass($modelObject));
+        $classReflection = new ReflectionClass($this);
         $className = $classReflection->getShortName();
         $classNamespace = $classReflection->getNamespaceName();
 
-        if ($module = Modules::findFirstByName($className)) {
-            $model = $classNamespace . '\\' . ucfirst($module->name) . 'CustomFields';
-            $modelId = strtolower($module->name) . '_id';
-
-            $customFields = CustomFields::findByCustomFieldsModulesId($module->getId());
-
-            $result = $findResults->toArray();
-
-            foreach ($customFields as $customField) {
-                $result['custom_fields'][$customField->name] = '';
-                $moduleValues = $model::find([
-                    $modelId . ' = ?0 AND custom_fields_id = ?1',
-                    'bind' => [$result['id'], $customField->getId()]
-                ]);
-
-                if ($moduleValues->count()) {
-                    $result['custom_fields'][$customField->name] = $moduleValues[0]->value;
-                }
-            }
-
-            return $result;
+        if (!$module = Modules::findFirstByModelName(get_class($this))) {
+            throw new Exception('Trying to get custom fields of a Model ' . $className . ' that doesnt use it');
         }
 
-        return $findResults->toArray();
+        $model = $classNamespace . '\\' . ucfirst($module->name) . 'CustomFields';
+        $modelId = strtolower($module->name) . '_id';
+
+        $customFields = CustomFields::findByCustomFieldsModulesId($module->getId());
+
+        foreach ($customFields as $customField) {
+            $result[$customField->label ?? $customField->name] = [
+                'type' => $customField->type->name,
+                'label' => $customField->name,
+                'attributse' => $customField->attributes ? json_decode($customField->attributes) : null
+            ];
+        }
+
+        return $result;
     }
 
     /**
@@ -124,7 +114,7 @@ trait CustomFieldsTrait
 
         if ($results) {
             foreach ($results as $result) {
-                $customFields = $result->getAllCustomFields();
+                $customFields = $result->getAllCustomFields([]);
                 if (is_array($customFields)) {
                     //field the object
                     foreach ($customFields as $key => $value) {
@@ -151,7 +141,7 @@ trait CustomFieldsTrait
         $result = parent::findFirst($parameters);
 
         if ($result) {
-            $customFields = $result->getAllCustomFields();
+            $customFields = $result->getAllCustomFields([]);
 
             if (is_array($customFields)) {
                 //field the object
@@ -196,11 +186,11 @@ trait CustomFieldsTrait
                 if (!$customModel->save()) {
                     throw new Exception('Custome ' . $key . ' - ' . $this->customModel->getMessages()[0]);
                 }
+
+                //overwrite the values to return the object
+                $this->{$key} = $value;
             }
         }
-
-        //clean
-        unset($this->customFields);
 
         return true;
     }
@@ -288,6 +278,7 @@ trait CustomFieldsTrait
     public function afterCreate()
     {
         $this->saveCustomFields();
+        unset($this->customFields);
     }
 
     /**
@@ -300,19 +291,22 @@ trait CustomFieldsTrait
         //only clean and change custom fields if they have been set
         if (!empty($this->customFields)) {
             //replace old custom with new
-            $allCustomFields = $this->getAllCustomFields();
+            $allCustomFields = $this->getAllCustomFields([]);
             if (is_array($allCustomFields)) {
                 foreach ($this->customFields as $key => $value) {
                     $allCustomFields[$key] = $value;
                 }
             }
 
-            //set
-            $this->setCustomFields($allCustomFields);
-            //clean old
-            $this->cleanCustomFields($this->getId());
-            //save new
-            $this->saveCustomFields();
+            if (!empty($allCustomFields)) {
+                //set
+                $this->setCustomFields($allCustomFields);
+                //clean old
+                $this->cleanCustomFields($this->getId());
+                //save new
+                $this->saveCustomFields();
+                //unset($this->customFields);
+            }
         }
     }
 
