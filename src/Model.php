@@ -6,10 +6,19 @@ use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Database\Exception\ModelNotProcessedException;
 use Phalcon\Mvc\Model\MetaData\Memory as MetaDataMemory;
 use Phalcon\Mvc\Model\ResultsetInterface;
+use Phalcon\Mvc\Model as PhalconModel;
+use RuntimeException;
 use ReflectionClass;
 
-class Model extends \Phalcon\Mvc\Model
+class Model extends PhalconModel
 {
+    /**
+     * Define a model alias to throw exception msg to the end user.
+     *
+     * @var ?string
+     */
+    protected static $modelNameAlias = null;
+
     /**
      * @return int
      */
@@ -139,6 +148,16 @@ class Model extends \Phalcon\Mvc\Model
         }
 
         return $results;
+        $record = static::findFirst([
+            'conditions' => 'id = ?0 and is_deleted = ?1',
+            'bind' => [$id, 0]
+        ]);
+
+        if ($record) {
+            return $record;
+        }
+
+        throw new ModelNotFoundException('Record not found in ' . self::getModelNameAlias());
     }
 
     /**
@@ -149,7 +168,7 @@ class Model extends \Phalcon\Mvc\Model
     */
     public function saveOrFail($data = null, $whiteList = null): bool
     {
-        if ($savedModel = parent::save($data, $whiteList)) {
+        if ($savedModel = static::save($data, $whiteList)) {
             return $savedModel;
         }
 
@@ -227,14 +246,18 @@ class Model extends \Phalcon\Mvc\Model
     {
         $primaryKeys = $this->getPrimaryKeys();
 
-        return !empty($primaryKeys) ? $primaryKeys[0] : [];
+        if (empty($primaryKeys)) {
+            throw new RuntimeException('No primary key defined in this Model ' . self::getModelNameAlias());
+        }
+
+        return $primaryKeys[0];
     }
 
     /**
     * Throws an exception with including all validation messages that were retrieved.
     * @throws ModelNotProcessedException
     */
-    private function throwErrorMessages(): void
+    protected function throwErrorMessages(): void
     {
         throw new ModelNotProcessedException(
             (new ReflectionClass(new static))->getShortName() . ' ' . current($this->getMessages())->getMessage()
