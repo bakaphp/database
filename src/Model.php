@@ -5,6 +5,7 @@ namespace Baka\Database;
 use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Database\Exception\ModelNotProcessedException;
 use Phalcon\Mvc\Model\MetaData\Memory as MetaDataMemory;
+use Phalcon\Mvc\Model\ResultsetInterface;
 use Phalcon\Mvc\Model as PhalconModel;
 use RuntimeException;
 use ReflectionClass;
@@ -110,6 +111,43 @@ class Model extends PhalconModel
      */
     public static function getByIdOrFail($id): self
     {
+        if ($record = static::findFirst($id)) {
+            return $record;
+        }
+
+        throw new ModelNotFoundException((new ReflectionClass(new static))->getShortName() . ' Record not found');
+    }
+
+    /**
+     * Query the first record that matches the specified conditions.
+     *
+     * @param array $parameters
+     * @return self
+     */
+    public static function findFirstOrFail($parameters = null): self
+    {
+        $result = static::findFirst($parameters);
+        if (!$result) {
+            throw new ModelNotFoundException((new ReflectionClass(new static))->getShortName() . ' Record not found');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Query the first record that matches the specified conditions.
+     *
+     * @param array $parameters
+     * @return self
+     */
+    public static function findOrFail($parameters = null): ResultsetInterface
+    {
+        $results = static::find($parameters);
+        if (!$results) {
+            throw new ModelNotFoundException((new ReflectionClass(new static))->getShortName() . ' Record not found');
+        }
+
+        return $results;
         $record = static::findFirst([
             'conditions' => 'id = ?0 and is_deleted = ?1',
             'bind' => [$id, 0]
@@ -180,6 +218,10 @@ class Model extends PhalconModel
                 unset($result[$key]);
             }
         }
+        
+        //remove properties we add 
+        unset($result['customFields']);
+        unset($result['uploadedFiles']);
 
         return $result;
     }
@@ -218,17 +260,17 @@ class Model extends PhalconModel
     protected function throwErrorMessages(): void
     {
         throw new ModelNotProcessedException(
-            self::getModelNameAlias() . ' - ' . current($this->getMessages())->getMessage()
+            (new ReflectionClass(new static))->getShortName() . ' ' . current($this->getMessages())->getMessage()
         );
     }
 
     /**
-     * Get the model name alias to use for public error msg.
+     * Does this model have custom fields?
      *
-     * @return string
+     * @return boolean
      */
-    protected static function getModelNameAlias(): string
+    public function hasCustomFields(): bool
     {
-        return self::modelNameAlias ?: (new ReflectionClass(self))->getShortName();
+        return isset($this->customFields);
     }
 }

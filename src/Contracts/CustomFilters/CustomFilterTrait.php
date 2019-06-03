@@ -95,7 +95,7 @@ trait CustomFilterTrait
             $conditional = array_key_exists($i + 1, $criterias) ? $criterias[$i + 1] : ' ';
 
             $customFilterCondition = new Conditions();
-            $customFilterCondition->search_filter_id = $filter->getId();
+            $customFilterCondition->custom_filter_id = $filter->getId();
             $customFilterCondition->position = $i > 0 ? $i : $i + 1;
             $customFilterCondition->value = $criterias[$i]['value'];
             $customFilterCondition->field = $criterias[$i]['field'];
