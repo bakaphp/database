@@ -33,12 +33,7 @@ class Apps extends Model
      * @var integer
      */
     public $is_deleted;
-    /**
-     * Initialize method for model.
-     */
-    public function initialize()
-    {
-    }
+    
     /**
      * Returns table name mapped in the model.
      *
