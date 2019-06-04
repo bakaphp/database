@@ -2,12 +2,12 @@
 
 use \Phalcon\Di;
 use \Phalcon\Test\UnitTestCase as PhalconTestCase;
-use Baka\Auth\Models\Apps;
+use Baka\Database\Apps;
 
 abstract class PhalconUnitTestCase extends PhalconTestCase
 {
     /**
-     * 
+     *
      *
      * @var Faker\Factory
      */

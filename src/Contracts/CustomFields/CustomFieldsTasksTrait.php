@@ -4,7 +4,7 @@ namespace Baka\Database\Contracts\CustomFields;
 
 use Baka\Database\CustomFields\Modules;
 use Baka\Database\CustomFields\CustomFields;
-use Baka\Auth\Models\Apps;
+use Baka\Database\Apps;
 use Phalcon\Utils\Slug;
 use Baka\Database\CustomFields\FieldsValues;
 use Baka\Database\CustomFields\FieldsType;

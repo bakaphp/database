@@ -4,7 +4,7 @@ namespace Baka\Database\CustomFields;
 
 use Baka\Database\Model;
 use Baka\Database\Exception\Exception;
-use Baka\Auth\Models\Apps;
+use Baka\Database\Apps;
 
 class Modules extends Model
 {
