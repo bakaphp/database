@@ -3,7 +3,7 @@
 namespace Baka\Database\Contracts;
 
 use Baka\Database\CustomFields\Modules;
-use Baka\Auth\Models\Apps;
+use Baka\Database\Apps;
 
 /**
  * Custom field class.
