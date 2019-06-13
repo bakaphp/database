@@ -148,16 +148,6 @@ class Model extends PhalconModel
         }
 
         return $results;
-        $record = static::findFirst([
-            'conditions' => 'id = ?0 and is_deleted = ?1',
-            'bind' => [$id, 0]
-        ]);
-
-        if ($record) {
-            return $record;
-        }
-
-        throw new ModelNotFoundException('Record not found in ' . self::getModelNameAlias());
     }
 
     /**
@@ -218,10 +208,9 @@ class Model extends PhalconModel
                 unset($result[$key]);
             }
         }
-        
-        //remove properties we add 
-        unset($result['customFields']);
-        unset($result['uploadedFiles']);
+
+        //remove properties we add
+        unset($result['customFields'], $result['uploadedFiles']);
 
         return $result;
     }
@@ -231,7 +220,7 @@ class Model extends PhalconModel
      *
      * @return array
      */
-    protected function getPrimaryKeys(): array
+    public function getPrimaryKeys(): array
     {
         $metaData = new MetaDataMemory();
         return $metaData->getPrimaryKeyAttributes($this);
@@ -242,7 +231,7 @@ class Model extends PhalconModel
      *
      * @return array
      */
-    protected function getPrimaryKey(): string
+    public function getPrimaryKey(): string
     {
         $primaryKeys = $this->getPrimaryKeys();
 
