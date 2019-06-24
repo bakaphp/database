@@ -9,7 +9,7 @@
     "require": {
         "php": ">=7.2",
         "ext-phalcon": ">=3.0.0",
-        "vlucas/phpdotenv": "^2.0",
+        "vlucas/phpdotenv": "^3.4",
         "phalcon/incubator": ">=3.0"
 
     },
