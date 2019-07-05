@@ -49,6 +49,7 @@ trait CustomFilterTrait
             $customFilter->companies_id = $params['companies_id'];
             $customFilter->companies_branch_id = $params['companies_branch_id'];
             $customFilter->users_id = $params['users_id'];
+            $customFilter->fields_type_id = $params['fields_type_id'];
         }
 
         $customFilter->name = $params['name'];
