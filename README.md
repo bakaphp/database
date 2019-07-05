@@ -2,6 +2,10 @@
 
 Baka Database
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bakaphp/database/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bakaphp/database/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/bakaphp/database/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/bakaphp/database/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/bakaphp/database/badges/build.png?b=master)](https://scrutinizer-ci.com/g/bakaphp/database/build-status/master)
+
 # Model
 
 The default behavior of the baka model is giving you the normal functions to work with any mc project
