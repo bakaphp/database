@@ -88,6 +88,15 @@ class Model extends PhalconModel
      */
     public function beforeUpdate()
     {
+        //if we are trying to overwrite a existing record
+        //sometimes we need to fill up this rows manually
+        if (empty($this->created_at)) {
+            $this->created_at = date('Y-m-d H:i:s');
+        }
+        if (empty($this->is_deleted)) {
+            $this->is_deleted = 0;
+        }
+
         $this->updated_at = date('Y-m-d H:i:s');
     }
 
