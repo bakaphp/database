@@ -17,8 +17,8 @@ $loader = new \Phalcon\Loader();
 $loader->registerNamespaces(
     [
         'Baka\Database' => ROOT_DIR . 'src',
-        'Test\Model' => ROOT_DIR . 'tests\_support\Model',
-        'Test\Indices' => ROOT_DIR . 'tests\_support\Indices',
+        'Test\Model' => ROOT_DIR . 'tests/_support/Model',
+        'Test\Indices' => ROOT_DIR . 'tests/_support/Indices',
         'Baka\Elasticsearch' => ROOT_DIR . '..\phalcon-elasticsearch\src\\',
         'Baka\Auth' => ROOT_DIR . '..\auth\src\\',
     ]
