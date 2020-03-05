@@ -11,7 +11,7 @@
         "ext-phalcon": ">=3.0.0",
         "vlucas/phpdotenv": "^2.0",
         "phalcon/incubator": ">=3.0",
-        "robmorgan/phinx": "^0.11"
+        "robmorgan/phinx": "^0.1"
 
     },
     "require-dev": {
