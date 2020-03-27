@@ -4,6 +4,7 @@ namespace Baka\Database;
 
 use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Database\Exception\ModelNotProcessedException;
+use Phalcon\Mvc\ModelInterface;
 use Phalcon\Mvc\Model\MetaData\Memory as MetaDataMemory;
 use Phalcon\Mvc\Model\ResultsetInterface;
 use Phalcon\Mvc\Model as PhalconModel;
@@ -118,7 +119,7 @@ class Model extends PhalconModel
      * @param mixed $id
      * @return self
      */
-    public static function getByIdOrFail($id): self
+    public static function getByIdOrFail($id): ModelInterface
     {
         if ($record = static::findFirst($id)) {
             return $record;
@@ -133,7 +134,7 @@ class Model extends PhalconModel
      * @param array $parameters
      * @return self
      */
-    public static function findFirstOrFail($parameters = null): self
+    public static function findFirstOrFail($parameters = null): ModelInterface
     {
         $result = static::findFirst($parameters);
         if (!$result) {
