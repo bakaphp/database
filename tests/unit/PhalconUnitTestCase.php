@@ -1,7 +1,7 @@
 <?php
 
-use \Phalcon\Di;
-use \Phalcon\Test\UnitTestCase as PhalconTestCase;
+use Phalcon\Di;
+use Phalcon\Test\UnitTestCase as PhalconTestCase;
 use Baka\Database\Apps;
 
 abstract class PhalconUnitTestCase extends PhalconTestCase

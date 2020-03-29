@@ -12,7 +12,6 @@
         "vlucas/phpdotenv": "^2.0",
         "phalcon/incubator": ">=3.0",
         "robmorgan/phinx": "0.*"
-
     },
     "require-dev": {
         "codeception/codeception": "^2.4",
@@ -20,7 +19,6 @@
         "phalcon/incubator": "~3.3",
         "fzaninotto/faker": "^1.9@dev",
         "odan/phinx-migrations-generator": "dev-master"
-
     },
     "autoload": {
         "psr-4": {

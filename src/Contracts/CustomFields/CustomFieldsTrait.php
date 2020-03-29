@@ -244,7 +244,9 @@ trait CustomFieldsTrait
     public function beforeCreate()
     {
         if (empty($this->customFields)) {
-            throw new Exception('This is a custom field module, which means it needs its custom field values in order to work, please call setCustomFields');
+            throw new Exception(
+                'This is a custom field module, which means it needs its custom field values in order to work, please call setCustomFields
+            ');
         }
 
         parent::beforeCreate();
