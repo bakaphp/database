@@ -33,8 +33,8 @@ trait CustomFieldsTrait
             throw new Exception('Trying to get custom fields of a Model ' . $className . ' that doesnt use it');
         }
 
-        $model = $classNamespace . '\\' . ucfirst($module->name) . 'CustomFields';
-        $modelId = strtolower($module->name) . '_id';
+        //$model = $classNamespace . '\\' . ucfirst($module->name) . 'CustomFields';
+        //$modelId = strtolower($module->name) . '_id';
 
         $customFields = CustomFields::findByCustomFieldsModulesId($module->getId());
 
@@ -74,7 +74,6 @@ trait CustomFieldsTrait
         }
 
         //$conditions = 'modules_id = ? ' . $fieldsIn;
-
         $bind = [$this->getId(), $module->getId()];
 
         $customFieldsValueTable = $this->getSource() . '_custom_fields';
