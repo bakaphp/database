@@ -40,7 +40,7 @@ class OtherModels extends AbstractMigration
             ->addColumn('companies_branch_id', 'integer', ['null' => false, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 11,'after'=> 'companies_id'])
             ->addColumn('users_id', 'integer', ['null' => false, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 11,'after'=> 'companies_branch_id'])
             ->addColumn('sequence_logic', 'string', ['null' => false, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4','after'=> 'users_id'])
-            ->addColumn('description', 'string', ['null' => false, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4','after'=> 'sequence_logic'])
+            ->addColumn('description', 'string', ['null' => true, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4','after'=> 'sequence_logic'])
             ->addColumn('criterias', 'string', ['null' => false, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4','after'=> 'description'])
             ->addColumn('created_at', 'datetime', ['null' => true, 'after' => 'criterias'])
             ->addColumn('updated_at', 'datetime', ['null' => true, 'after' => 'created_at'])
