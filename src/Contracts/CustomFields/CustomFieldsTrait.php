@@ -42,7 +42,7 @@ trait CustomFieldsTrait
             $result[$customField->label ?? $customField->name] = [
                 'type' => $customField->type->name,
                 'label' => $customField->name,
-                'attributse' => $customField->attributes ? json_decode($customField->attributes) : null
+                'attributes' => $customField->attributes ? json_decode($customField->attributes) : null
             ];
         }
 
@@ -58,7 +58,10 @@ trait CustomFieldsTrait
     public function getAllCustomFields(array $fields = [])
     {
         try {
-            $module = Modules::getByCustomeFieldModuleByModuleAndApp(get_class($this), $this->di->getApp());
+            $module = Modules::getByCustomeFieldModuleByModuleAndApp(
+                get_class($this), 
+                $this->di->getApp()
+            );
         } catch (Exception $e) {
             return [];
         }
